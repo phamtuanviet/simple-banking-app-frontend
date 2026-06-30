@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 2. Cài đặt các thẻ cơ bản (Base layer) */
+@layer base {
+  html, body, #root {
+    /* Đảm bảo ứng dụng luôn chiếm toàn bộ chiều cao màn hình */
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    
+    /* Font chữ mặc định (tương thích tốt với Ant Design) */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+      'Noto Color Emoji';
+      
+    /* Màu nền tổng thể của app (màu xám nhạt rất phổ biến cho các app tài chính/dashboard) */
+    background-color: #f3f4f6; 
+  }
+}
