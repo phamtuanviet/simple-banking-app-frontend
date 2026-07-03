@@ -11,7 +11,6 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   const user = useAuthStore((state) => state.user);
 
   if (!accessToken) {
-    console.log("Access token not found");
     return <Navigate to="/login" replace />;
   }
 

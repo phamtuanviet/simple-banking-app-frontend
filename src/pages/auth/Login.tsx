@@ -49,7 +49,13 @@ const Login: React.FC = () => {
 
       setAuth(response.data.user, response.data.accessToken);
       message.success("Đăng nhập thành công!");
-      navigate("/");
+      if (response.data.user.role === "admin") {
+        console.log("Admin");
+        navigate("admin"); // Admin về thẳng trang Dashboard tổng quan của admin
+      } else {
+        console.log("Customer");
+        navigate("/"); // Customer về trang Dashboard cá nhân
+      }
     } catch (error: any) {
       const errorMsg =
         error.response?.data?.message ||

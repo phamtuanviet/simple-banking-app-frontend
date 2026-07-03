@@ -1,16 +1,16 @@
-import axios from 'axios';
-import { useAuthStore } from "../../store/auth.store"
+import axios from "axios";
+import { useAuthStore } from "../../store/auth.store";
 
 // Lấy URL từ biến môi trường Vite
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5173';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const axiosClient = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   // Nếu Refresh Token lưu dưới dạng HttpOnly Cookie, bắt buộc bật dòng dưới:
-//   withCredentials: true, 
+  // withCredentials: true,
 });
 
 // ============================================
@@ -20,13 +20,13 @@ axiosClient.interceptors.request.use(
   (config) => {
     // Zustand cho phép lấy state ở ngoài React Component qua hàm getState()
     const accessToken = useAuthStore.getState().accessToken;
-    
+
     if (accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // ============================================
@@ -57,9 +57,12 @@ axiosClient.interceptors.response.use(
 
     // Nếu lỗi 401 và chưa từng được đánh dấu là retry
     if (error.response?.status === 401 && !originalRequest._retry) {
-      
       // Bỏ qua, không cố gắng refresh nếu API đang gọi vốn dĩ là API login hoặc refresh
-      if (originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/refresh')) {
+      console.log("Refresh token failed");
+      if (
+        originalRequest.url.includes("/auth/login") ||
+        originalRequest.url.includes("/auth/refresh-token")
+      ) {
         return Promise.reject(error);
       }
 
@@ -82,11 +85,16 @@ axiosClient.interceptors.response.use(
       try {
         // Gọi API lên Backend để xin cấp lại token
         // (Thay đổi endpoint dựa theo backend của bạn thực tế)
-        const refreshResponse = await axios.post(`${API_URL}/auth/refresh`, {}, {
-          // withCredentials: true // Mở ra nếu dùng HttpOnly Cookie
-        });
-        
-        const newAccessToken = refreshResponse.data.accessToken;
+        console.log("Refresh token");
+        const refreshResponse = await axios.post(
+          `${API_URL}/auth/refresh-token`,
+          {},
+          {
+            withCredentials: true, // Mở ra nếu dùng HttpOnly Cookie
+          },
+        );
+
+        const newAccessToken = refreshResponse.data.data;
 
         // Cập nhật lại token vào Zustand Store
         const user = useAuthStore.getState().user;
@@ -96,21 +104,20 @@ axiosClient.interceptors.response.use(
 
         // Chạy lại các request đang đợi
         processQueue(null, newAccessToken);
-        
+
         // Gắn token mới vào request hiện tại và chạy lại
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originalRequest);
-
       } catch (refreshError) {
         // Lỗi refresh token (ví dụ: Refresh token cũng hết hạn luôn)
         processQueue(refreshError, null);
-        
+
         // Clear thông tin đăng nhập trong Store
         useAuthStore.getState().logout();
-        
+
         // Đá người dùng về trang đăng nhập
-        window.location.href = '/login';
-        
+        window.location.href = "/login";
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -118,5 +125,5 @@ axiosClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );

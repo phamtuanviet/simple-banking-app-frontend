@@ -42,38 +42,54 @@ export const authService = {
   ): Promise<ApiResponse<{ accessToken: string; user: User }>> => {
     // Vì axiosClient đã bóc tách response.data ở interceptor,
     // chúng ta chỉ cần return thẳng hàm post là nó sẽ trả về đúng LoginResponse
-    return axiosClient.post("/auth/login", payload);
+    return axiosClient.post("/auth/login", payload, {
+      withCredentials: true,
+    });
   },
 
   /**
    * Hàm ví dụ cho API đăng ký (Bạn có thể tự implement sau)
    */
-  register: async (payload: any): Promise<ApiResponse<string>> => {
+  register: async (payload: RegisterPayload): Promise<ApiResponse<string>> => {
     return axiosClient.post("/auth/register", payload);
   },
 
-  forgotPassword: async (payload: ForgotPasswordPayload): Promise<ApiResponse<any>> => {
-    return axiosClient.post('/auth/forgot-password', payload);
+  forgotPassword: async (
+    payload: ForgotPasswordPayload,
+  ): Promise<ApiResponse<any>> => {
+    return axiosClient.post("/auth/forgot-password", payload);
   },
 
-  resendVerification: async (payload: { email: string }): Promise<ApiResponse<any>> => {
-    return axiosClient.post('/auth/resend-verification', payload);
+  resendVerification: async (payload: {
+    email: string;
+  }): Promise<ApiResponse<any>> => {
+    return axiosClient.post("/auth/resend-verification", payload);
   },
 
-  verifyEmail: async (payload: { token: string }): Promise<ApiResponse<any>> => {
-    return axiosClient.get('/auth/verify-email', { 
-      params: { 
-        token: payload.token 
-      } 
+  verifyEmail: async (payload: {
+    token: string;
+  }): Promise<ApiResponse<any>> => {
+    return axiosClient.get("/auth/verify-email", {
+      params: {
+        token: payload.token,
+      },
     });
   },
 
-  resetPassword: async (payload: ResetPasswordPayload): Promise<ApiResponse<any>> => {
-    return axiosClient.post('/auth/reset-password', payload);
+  resetPassword: async (
+    payload: ResetPasswordPayload,
+  ): Promise<ApiResponse<any>> => {
+    return axiosClient.post("/auth/reset-password", payload);
   },
 
   logout: async (): Promise<ApiResponse<any>> => {
-    return axiosClient.post('/auth/logout');
+    return axiosClient.post(
+      "/auth/logout",
+      {},
+      {
+        withCredentials: true,
+      },
+    );
   },
   // Các hàm khác như changePassword, forgotPassword sẽ nằm hết ở đây
 };
