@@ -9,6 +9,11 @@ import VerifyEmailNotice from "../pages/auth/VerifyEmailNotice";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import VerifyEmail from "../pages/auth/VerifyEmail";
 import ResetPassword from "../pages/auth/ResetPassword";
+import Transfer from "../pages/customer/Transfer";
+import TransactionHistory from "../pages/customer/TransactionHistory";
+import UserManagement from "../pages/admin/UserManagement";
+import AllTransactions from "../pages/admin/AllTransactions";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 export const router = createBrowserRouter([
   // Routes không cần Layout
@@ -20,7 +25,7 @@ export const router = createBrowserRouter([
       { path: "/verify-email-notice", element: <VerifyEmailNotice /> },
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/verify-email", element: <VerifyEmail /> },
-      { path: '/reset-password', element: <ResetPassword /> },
+      { path: "/reset-password", element: <ResetPassword /> },
     ],
   },
   // Nhóm Routes sử dụng MainLayout
@@ -30,7 +35,11 @@ export const router = createBrowserRouter([
       {
         // Nhúng MainLayout vào đây. Nó sẽ bọc tất cả các trang bên dưới.
         element: <MainLayout />,
-        children: [{ path: "/", element: <Dashboard /> }],
+        children: [
+          { path: "/", element: <Dashboard /> },
+          { path: "/transfer", element: <Transfer /> },
+          { path: "/history", element: <TransactionHistory /> },
+        ],
       },
     ],
   },
@@ -52,6 +61,11 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <MainLayout />,
+        children: [
+          { path: "", element: <AdminDashboard /> },
+          { path: "users", element: <UserManagement /> },
+          { path: "transactions", element: <AllTransactions /> },
+        ],
       },
     ],
   },
