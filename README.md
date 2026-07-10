@@ -1,75 +1,142 @@
-# React + TypeScript + Vite
+# Simple Banking App - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend cho ứng dụng ngân hàng đơn giản, được xây dựng bằng React, Vite, và Tailwind CSS.
 
-Currently, two official plugins are available:
+## Mục lục
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- [Tính năng](#tính-năng)
+- [Công nghệ sử dụng](#công-nghệ-sử-dụng)
+- [Yêu cầu cài đặt](#yêu-cầu-cài-đặt)
+- [Hướng dẫn cài đặt](#hướng-dẫn-cài-đặt)
+  - [1. Cài đặt thủ công (Local)](#1-cài-đặt-thủ-công-local)
+  - [2. Cài đặt bằng Docker](#2-cài-đặt-bằng-docker)
+- [Cấu hình môi trường (.env)](#cấu-hình-môi-trường-env)
+- [Chạy ứng dụng](#chạy-ứng-dụng)
 
-## React Compiler
+## Tính năng
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Giao diện đăng ký, đăng nhập, quên mật khẩu.
+- Bảng điều khiển chính hiển thị thông tin tài khoản, số dư.
+- Form chuyển tiền với chức năng tìm kiếm người nhận.
+- Hiển thị lịch sử giao dịch.
+- Nhận thông báo real-time về biến động số dư.
+- Giao diện responsive cho cả desktop và mobile.
 
-## Expanding the ESLint configuration
+## Công nghệ sử dụng
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Framework**: [React](https://react.dev/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Ngôn ngữ**: TypeScript
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) (hoặc Context API)
+- **Data Fetching**: [Axios](https://axios-http.com/)
+- **Real-time**: [Socket.IO Client](https://socket.io/docs/v4/client-api/)
+- **Routing**: [React Router DOM](https://reactrouter.com/)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Yêu cầu cài đặt
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Node.js (v18.x trở lên)
+- Yarn hoặc npm
+- Docker và Docker Compose (nếu chạy bằng Docker)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
 
-```
++## Hướng dẫn cài đặt
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
++### 1. Cài đặt thủ công (Local)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
++**Bước 1: Clone repository**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
++```bash
+git clone <your-repository-url>
+cd simple-banking-web
 
-```
+````
+
++**Bước 2: Cài đặt dependencies**
+
++```bash
+npm install
+````
+
++**Bước 3: Cấu hình biến môi trường**
+
++Tạo một file `.env` ở thư mục gốc của project từ file `.env.example` và cấu hình `VITE_API_URL` trỏ đến backend của bạn (ví dụ: `http://localhost:3000`).
+
++```bash
+cp .env.example .env
+
+````
+
++**Bước 4: Khởi chạy ứng dụng**
+
++```bash
+npm run dev
+````
+
++Ứng dụng sẽ chạy tại `http://localhost:3001` (hoặc một cổng khác nếu 3001 đã được sử dụng).
+
++### 2. Cài đặt bằng Docker
+
++Phương pháp này sẽ tự động dựng và chạy cả **frontend, backend và database** trong các container riêng biệt.
+
++**Lưu ý:** Lệnh này được chạy từ thư mục `simple-banking-app-backend`.
+
++**Bước 1: Clone repository** (Nếu chưa có)
+
++**Bước 2: Cấu hình biến môi trường**
+
+- **Backend**: Đi đến thư mục `simple-banking-app-backend`, tạo file `.env` và cấu hình (đặc biệt `DB_HOST=db` và `VITE_API_URL=http://localhost:3000`).
+- **Frontend**: Đi đến thư mục `simple-banking-web`, tạo file `.env` và cấu hình `VITE_API_URL=http://localhost:3000`.
+
++**Bước 3: Khởi chạy với Docker Compose**
+
++Từ thư mục `simple-banking-app-backend`, chạy lệnh:
+
++```bash
+docker-compose up --build
+
+````
+
++Lệnh này sẽ build Docker image cho cả frontend và backend, sau đó khởi chạy toàn bộ hệ thống.
+- Frontend sẽ có thể truy cập tại `http://localhost:3001`.
+- Backend sẽ có thể truy cập tại `http://localhost:3000`.
+
++Để dừng các container:
+
++```bash
+docker-compose down
+````
+
++---
+
++## Cấu hình môi trường (.env)
+
++Tạo file `.env` ở thư mục gốc của frontend và điền giá trị.
+
++```env
+
+# URL của backend API.
+
+# Khi chạy local, nó là http://localhost:3000.
+
+# Khi chạy với Docker, nó cũng là http://localhost:3000 vì bạn truy cập từ trình duyệt của máy host.
+
+VITE_API_URL=http://localhost:3000
+
+````
+
++---
+
++## Chạy ứng dụng
+
++```bash
+# Development mode (với hot-reload)
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview the production build locally
+npm run preview
+````
