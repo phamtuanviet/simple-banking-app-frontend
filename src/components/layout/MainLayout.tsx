@@ -7,6 +7,11 @@ import {
   UserOutlined,
   LogoutOutlined,
   TeamOutlined,
+  BankOutlined,
+  SettingOutlined,
+  BookOutlined,
+  SafetyCertificateOutlined,
+  ProfileOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/auth.store";
@@ -68,6 +73,11 @@ const MainLayout: React.FC = () => {
             icon: <HistoryOutlined />,
             label: "Lịch sử giao dịch",
           },
+          {
+            key: "/profile",
+            icon: <SettingOutlined />,
+            label: "Cài đặt tài khoản",
+          },
         ]
       : []),
 
@@ -89,6 +99,37 @@ const MainLayout: React.FC = () => {
             icon: <HistoryOutlined />,
             label: "Quản lý giao dịch",
           },
+          // ==========================================
+          {
+            key: "/admin/ledger",
+            icon: <BookOutlined />, // Icon quyển sổ
+            label: "Quản lý sổ cái",
+          },
+          {
+            key: "/admin/audit-logs",
+            icon: <SafetyCertificateOutlined />, // Icon bảo mật/truy vết
+            label: "Nhật ký hệ thống",
+          },
+          {
+            key: "/admin/user-history",
+            icon: <ProfileOutlined />,
+            label: "Lịch sử tài khoản",
+          },
+          {
+            key: "/admin/counter", // Đường dẫn tới trang TellerCounter
+            icon: <BankOutlined />,
+            label: "Giao dịch tại quầy",
+          },
+        ]
+      : []),
+    ...(user?.role === "teller"
+      ? [
+          {
+            key: "/teller/counter",
+            icon: <BankOutlined />,
+            label: "Giao dịch tại quầy",
+          },
+          // Sau này bạn có thể thêm trang "Lịch sử nạp rút" riêng cho Teller ở đây
         ]
       : []),
   ];
@@ -97,9 +138,19 @@ const MainLayout: React.FC = () => {
   const userMenu = {
     items: [
       {
+        key: "profile",
+        icon: <UserOutlined />,
+        label: "Hồ sơ cá nhân",
+        onClick: () => navigate("/profile"), // Điều hướng sang trang Profile
+      },
+      {
+        type: "divider", // Đường kẻ ngang phân cách
+      },
+      {
         key: "logout",
         icon: <LogoutOutlined />,
         label: "Đăng xuất",
+        danger: true, // Thêm màu đỏ cho nút đăng xuất
         onClick: handleLogout,
       },
     ],
@@ -153,7 +204,8 @@ const MainLayout: React.FC = () => {
               >
                 <Avatar
                   size="default"
-                  icon={<UserOutlined />}
+                  src={user?.avatarUrl} // Lấy link ảnh từ Zustand Store
+                  icon={<UserOutlined />} // Fallback tự động nếu ảnh rỗng hoặc bị lỗi mạng
                   className="cursor-pointer bg-blue-500 hover:bg-blue-600 transition-colors"
                 />
               </Dropdown>

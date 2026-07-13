@@ -6,7 +6,7 @@ import { axiosClient } from "../axiosClient";
 
 export interface NotificationItem {
   id: string;
-  type: 'transfer_in' | 'transfer_out' | 'system';
+  type: 'transfer_in' | 'transfer_out' | 'deposit' | 'withdrawal' | 'system';
   title: string;
   message: string;
   amount?: number;

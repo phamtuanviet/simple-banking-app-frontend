@@ -96,6 +96,7 @@ export default function TransactionHistory() {
       title: "Mã giao dịch",
       dataIndex: "id",
       key: "id",
+      width: 130, // Cố định độ rộng
       render: (id: string) => (
         <Text copyable={{ text: id }}>{id.substring(0, 8)}...</Text>
       ),
@@ -104,17 +105,59 @@ export default function TransactionHistory() {
       title: "Thời gian",
       dataIndex: "createdAt",
       key: "createdAt",
+      width: 170, // Đủ chỗ cho ngày giờ
       render: (dateStr: string) => new Date(dateStr).toLocaleString("vi-VN"),
     },
+    // ==========================================
+    // [MỚI] CỘT LOẠI GIAO DỊCH
+    // ==========================================
     {
-      title: "Biến động",
+      title: "Loại GD",
+      dataIndex: "type",
+      key: "type",
+      width: 130,
+      render: (type: string) => {
+        const typeConfig: Record<string, { color: string; text: string }> = {
+          transfer: { color: "blue", text: "Chuyển khoản" },
+          deposit: { color: "green", text: "Nạp tiền" },
+          withdrawal: { color: "orange", text: "Rút tiền" },
+          reversal: { color: "purple", text: "Hoàn tiền" },
+        };
+        const config = typeConfig[type] || {
+          color: "default",
+          text: type?.toUpperCase(),
+        };
+        return <Tag color={config.color}>{config.text}</Tag>;
+      },
+    },
+    // ==========================================
+    // [ĐÃ SỬA] CỘT BIẾN ĐỘNG (CHỐNG XUỐNG DÒNG)
+    // ==========================================
+    {
+      title: "Biến động (VND)",
       key: "amount",
+      align: "right", // Căn phải cho số tiền dễ nhìn
+      width: 160,
       render: (_, record) => {
-        const isMoneyOut = record.fromAccountId === myAccountId;
+        // Nếu là Nạp tiền (deposit) hoặc Hoàn tiền (reversal) thì coi như tiền vào
+        // Nếu là rút (withdrawal) thì coi như tiền ra
+        // Nếu là chuyển khoản (transfer) thì kiểm tra xem mình là người gửi hay nhận
+        let isMoneyOut = false;
+        if (record.type === "withdrawal") {
+          isMoneyOut = true;
+        } else if (
+          record.type === "transfer" &&
+          record.fromAccountId === myAccountId
+        ) {
+          isMoneyOut = true;
+        }
+
         const sign = isMoneyOut ? "-" : "+";
         const color = isMoneyOut ? "danger" : "success";
+
         return (
-          <Text type={color} strong>
+          // Thêm className="whitespace-nowrap" để chặn việc text bị rớt dòng
+          <Text type={color} strong className="whitespace-nowrap text-base">
             {sign} {new Intl.NumberFormat("vi-VN").format(record.amount)}
           </Text>
         );
@@ -124,16 +167,18 @@ export default function TransactionHistory() {
       title: "Nội dung",
       dataIndex: "description",
       key: "description",
+      // Thêm minWidth để cột nội dung co giãn linh hoạt chiếm phần không gian còn lại
+      render: (text: string) => <div style={{ minWidth: 200 }}>{text}</div>,
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      width: 160,
       render: (status: string) => {
         let color = "default";
         let text = status;
-
-        switch (status.toLowerCase()) {
+        switch (status?.toLowerCase()) {
           case "completed":
             color = "green";
             text = "Thành công";
@@ -154,20 +199,24 @@ export default function TransactionHistory() {
             color = "purple";
             text = "Chờ Admin duyệt";
             break;
+          case "reversed":
+            color = "volcano";
+            text = "Đã hoàn tiền";
+            break;
           default:
-            text = status.toUpperCase();
+            text = status?.toUpperCase();
         }
-
         return <Tag color={color}>{text}</Tag>;
       },
     },
     {
       title: "Hành động",
       key: "action",
+      width: 120,
+      align: "center",
       render: (_, record) => {
-        // Nút "Xác thực ngay" chỉ hiện cho GD pending_otp và do chính người này gửi đi
         if (
-          record.status.toLowerCase() === "pending_otp" &&
+          record.status?.toLowerCase() === "pending_otp" &&
           record.fromAccountId === myAccountId
         ) {
           return (

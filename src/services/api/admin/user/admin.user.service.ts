@@ -3,17 +3,33 @@ import type { PaginatedData } from "../../../../types/paginatedData";
 import type { ApiResponse } from "../../auth/auth.service";
 import { axiosClient } from "../../axiosClient";
 
+import type { UserRole, UserStatus } from "../../../types/user.type";
+
 export interface UserItem {
   id: string;
   fullName: string;
   email: string;
-  role: "admin" | "customer";
-  status: "active" | "locked";
+
+  // 1. Dùng chung kiểu dữ liệu để đồng bộ, hoặc tự định nghĩa lại nhưng phải có thêm "teller"
+  role: UserRole | "admin" | "customer" | "teller";
+
+  // 2. Trạng thái đã đủ 3 cái
+  status: UserStatus | "active" | "locked" | "banned";
+
   isEmailVerified: boolean;
-  created_at: string;
+
+  // 3. Đổi snake_case thành camelCase (TypeORM ở Backend tự động map created_at thành createdAt)
+  createdAt: string;
+
+  // 4. [QUAN TRỌNG] Phải có trường này để giao diện đọc được thời hạn khóa
+  lockoutUntil?: string | null;
+
+  // 5. (Tùy chọn) Thêm avatar nếu sau này bạn muốn hiển thị ảnh nhỏ bé ở bảng
+  avatarUrl?: string | null;
 }
 
 export interface UserFilters {
+  id: string;
   search?: string;
   status?: string;
   role?: string;
@@ -47,12 +63,12 @@ export const adminService = {
    */
   updateUserStatus: async (
     id: string,
-    status: "active" | "locked",
+    status: "active" | "locked" | "banned",
   ): Promise<ApiResponse> => {
     return axiosClient.patch(`/admin/users/${id}/status`, { status });
   },
-  
+
   getDashboardStats: async (): Promise<ApiResponse<SystemStats>> => {
-    return axiosClient.get('/admin/stats');
+    return axiosClient.get("/admin/stats");
   },
 };

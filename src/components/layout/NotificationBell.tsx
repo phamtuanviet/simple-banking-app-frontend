@@ -6,10 +6,15 @@ import {
   ArrowDownOutlined,
   ArrowUpOutlined,
   InfoCircleOutlined,
+  PlusCircleOutlined,
+  MinusCircleOutlined,
 } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNotificationStore } from "../../store/notification.store";
-import { notificationService, type NotificationItem } from "../../services/api/notification/notification.service";
+import {
+  notificationService,
+  type NotificationItem,
+} from "../../services/api/notification/notification.service";
 
 const { Text } = Typography;
 
@@ -76,13 +81,21 @@ export default function NotificationBell() {
           // Render icon dựa vào type
           let Icon = InfoCircleOutlined;
           let iconColor = "text-blue-500";
+
           if (item.type === "transfer_in") {
             Icon = ArrowDownOutlined;
             iconColor = "text-green-500";
-          }
-          if (item.type === "transfer_out") {
+          } else if (item.type === "transfer_out") {
             Icon = ArrowUpOutlined;
             iconColor = "text-red-500";
+          } else if (item.type === "deposit") {
+            // Nạp tiền: Dùng icon dấu cộng và màu xanh ngọc/xanh đậm để phân biệt với transfer_in
+            Icon = PlusCircleOutlined;
+            iconColor = "text-teal-600";
+          } else if (item.type === "withdrawal") {
+            // Rút tiền: Dùng icon dấu trừ và màu cam để phân biệt với transfer_out (màu đỏ)
+            Icon = MinusCircleOutlined;
+            iconColor = "text-orange-500";
           }
 
           return (

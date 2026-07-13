@@ -6,6 +6,7 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   // Các action
+  setUser: (user: User) => void;
   setAuth: (user: User, accessToken: string) => void;
   logout: () => void;
 }
@@ -18,6 +19,7 @@ export const useAuthStore = create<AuthState>()(
 
       // Hàm gọi khi Login hoặc Refresh Token thành công
       setAuth: (user, accessToken) => set({ user, accessToken }),
+      setUser: (user) => set({ user }),
 
       // Hàm gọi khi User chủ động đăng xuất hoặc Refresh Token hết hạn
       logout: () => set({ user: null, accessToken: null }),
