@@ -14,6 +14,11 @@ import TransactionHistory from "../pages/customer/TransactionHistory";
 import UserManagement from "../pages/admin/UserManagement";
 import AllTransactions from "../pages/admin/AllTransactions";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import ProfilePage from "../pages/profile/ProfilePage";
+import TellerCounter from "../pages/teller/TellerCounter";
+import LedgerManagement from "../pages/admin/LedgerManagement";
+import AuditLogManagement from "../pages/admin/AuditLogManagement";
+import UserHistoryManagement from "../pages/admin/UserHistoryManagement";
 
 export const router = createBrowserRouter([
   // Routes không cần Layout
@@ -39,6 +44,7 @@ export const router = createBrowserRouter([
           { path: "/", element: <Dashboard /> },
           { path: "/transfer", element: <Transfer /> },
           { path: "/history", element: <TransactionHistory /> },
+          { path: "/profile", element: <ProfilePage /> },
         ],
       },
     ],
@@ -65,6 +71,13 @@ export const router = createBrowserRouter([
           { path: "", element: <AdminDashboard /> },
           { path: "users", element: <UserManagement /> },
           { path: "transactions", element: <AllTransactions /> },
+          { path: "ledger", element: <LedgerManagement /> },
+          { path: "audit-logs", element: <AuditLogManagement /> },
+          { path: "user-history", element: <UserHistoryManagement /> },
+          {
+            path: "counter",
+            element: <TellerCounter />,
+          },
         ],
       },
     ],
