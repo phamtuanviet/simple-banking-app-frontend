@@ -11,6 +11,37 @@ export interface AdminTransactionFilters {
   endDate?: string; // YYYY-MM-DD
 }
 
+export const TransactionType = {
+  TRANSFER: "transfer",
+  DEPOSIT: "deposit",
+  WITHDRAWAL: "withdrawal",
+  REVERSAL: "reversal",
+} as const;
+
+export type TransactionType =
+  (typeof TransactionType)[keyof typeof TransactionType];
+
+export const TransactionStatus = {
+  PENDING: "pending",
+  PENDING_OTP: "pending_otp",
+  PENDING_APPROVAL: "pending_approval",
+  PROCESSING: "processing",
+  COMPLETED: "completed",
+  FAILED: "failed",
+  REVERSED: "reversed",
+} as const;
+
+export type TransactionStatus =
+  (typeof TransactionStatus)[keyof typeof TransactionStatus];
+// Hành động duyệt giao dịch
+export const ApprovalAction = {
+  APPROVE: "approved",
+  REJECT: "rejected",
+} as const;
+
+export type ApprovalAction =
+  (typeof ApprovalAction)[keyof typeof ApprovalAction];
+
 // Kiểu dữ liệu Transaction mở rộng chứa thông tin Account & User
 export interface AdminTransaction {
   id: string;
@@ -39,6 +70,11 @@ export interface AdminTransaction {
   };
 }
 
+export interface ReversalRequest {
+  originalTransactionId: string;
+  reason: string;
+}
+
 export interface PaginatedAdminTransactions {
   items: AdminTransaction[];
   total: number;
@@ -46,6 +82,17 @@ export interface PaginatedAdminTransactions {
   limit: number;
 }
 
+export interface ApproveTransferRequest {
+  transactionId: string;
+  action: ApprovalAction;
+  remarks?: string;
+}
+
+// ĐÂY LÀ PHẦN LÕI BÊN TRONG CỦA 'data'
+export interface ApproveTransferData {
+  transactionId: string;
+  status: TransactionStatus;
+}
 export const adminService = {
   // ... (giữ lại các hàm getUsers, updateUserStatus cũ)
 
@@ -60,5 +107,24 @@ export const adminService = {
     return axiosClient.get("/admin/transactions", {
       params: { page, limit, ...filters },
     });
+  },
+
+  approveTransfer: async (
+    data: ApproveTransferRequest,
+  ): Promise<ApiResponse<ApproveTransferData>> => {
+    const body = {
+      action: data.action,
+      remarks: data.remarks,
+    };
+    return axiosClient.post(
+      `/admin/transactions/approve/${data.transactionId}`,
+      body,
+    );
+  },
+
+  reverseTransaction: async (
+    data: ReversalRequest,
+  ): Promise<ApiResponse<any>> => {
+    return axiosClient.post("/admin/transactions/reverse", data);
   },
 };
